@@ -12,42 +12,84 @@
 <style>
 
 body{
-background:#0f172a;
+background:linear-gradient(135deg,#0f172a,#020617);
 color:white;
 margin:0;
-padding:0;
 height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+font-family:Arial;
 }
 
 .chat-box{
 width:100%;
-max-width:600px;
+max-width:650px;
 background:#1e293b;
-padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.5);
+border-radius:12px;
+box-shadow:0 0 15px rgba(0,0,0,0.6);
+display:flex;
+flex-direction:column;
+overflow:hidden;
+}
+
+.header{
+background:#020617;
+padding:12px;
+text-align:center;
+font-weight:bold;
+font-size:20px;
 }
 
 #messages{
-height:350px;
+height:400px;
 overflow-y:auto;
-background:#020617;
-padding:10px;
-border-radius:6px;
+padding:15px;
+background:#0f172a;
+}
+
+.message{
 margin-bottom:10px;
+max-width:75%;
+padding:10px 14px;
+border-radius:12px;
+font-size:15px;
 }
 
 .user{
-color:#38bdf8;
-margin-bottom:8px;
+background:#2563eb;
+margin-left:auto;
+text-align:right;
 }
 
 .ai{
-color:#4ade80;
-margin-bottom:8px;
+background:#334155;
+}
+
+.input-area{
+padding:10px;
+background:#020617;
+}
+
+.form-control{
+background:#0f172a;
+color:white;
+border:none;
+}
+
+.form-control:focus{
+background:#0f172a;
+color:white;
+box-shadow:none;
+}
+
+.btn-send{
+background:#22c55e;
+border:none;
+}
+
+.btn-send:hover{
+background:#16a34a;
 }
 
 </style>
@@ -58,24 +100,28 @@ margin-bottom:8px;
 
 <div class="chat-box">
 
-<h3 class="text-center mb-3">🤖 Naveen AI Assistant</h3>
+<div class="header">
+🤖 Naveen AI Assistant
+</div>
 
 <div id="messages"></div>
 
+<div class="input-area">
 <div class="input-group">
 
 <input
 type="text"
 id="userInput"
 class="form-control"
-placeholder="Message likho..."
+placeholder="Type message..."
 onkeypress="handleKey(event)"
 >
 
-<button class="btn btn-primary" onclick="sendMessage()">
+<button class="btn btn-send" onclick="sendMessage()">
 Send
 </button>
 
+</div>
 </div>
 
 </div>
@@ -95,11 +141,10 @@ const message=input.value.trim();
 
 if(!message) return;
 
-const messagesDiv=document.getElementById("messages");
+const messages=document.getElementById("messages");
 
-messagesDiv.innerHTML+=`<div class="user"><b>You:</b> ${message}</div>`;
-
-messagesDiv.scrollTop=messagesDiv.scrollHeight;
+messages.innerHTML+=`<div class="message user">${message}</div>`;
+messages.scrollTop=messages.scrollHeight;
 
 input.value="";
 
@@ -115,15 +160,40 @@ body:JSON.stringify({message:message})
 
 const data=await res.json();
 
-messagesDiv.innerHTML+=`<div class="ai"><b>AI:</b> ${data.reply}</div>`;
+typeAIMessage(data.reply);
 
-messagesDiv.scrollTop=messagesDiv.scrollHeight;
+}catch{
 
-}catch(err){
-
-messagesDiv.innerHTML+=`<div class="ai">Server error</div>`;
+messages.innerHTML+=`<div class="message ai">⚠ Server Error</div>`;
 
 }
+
+}
+
+function typeAIMessage(text){
+
+const messages=document.getElementById("messages");
+
+const msgDiv=document.createElement("div");
+msgDiv.className="message ai";
+
+messages.appendChild(msgDiv);
+
+let i=0;
+
+function typing(){
+
+if(i<text.length){
+msgDiv.innerHTML+=text.charAt(i);
+i++;
+setTimeout(typing,20);
+}
+
+messages.scrollTop=messages.scrollHeight;
+
+}
+
+typing();
 
 }
 
