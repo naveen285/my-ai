@@ -1,91 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My AI Assistant</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .chat-box {
-            width: 500px;
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        #messages {
-            height: 300px;
-            overflow-y: auto;
-            background: #020617;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .user { color: #38bdf8; }
-        .ai { color: #4ade80; }
-        input {
-            width: 75%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px;
-            border: none;
-            background: #2563eb;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My AI Assistant</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#0f172a;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.chat-box{
+    width:90%;
+    max-width:500px;
+    background:#1e293b;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.4);
+}
+
+h2{
+    text-align:center;
+}
+
+#messages{
+    height:320px;
+    overflow-y:auto;
+    background:#020617;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:5px;
+    font-size:15px;
+}
+
+.user{
+    color:#38bdf8;
+    margin-bottom:5px;
+}
+
+.ai{
+    color:#4ade80;
+    margin-bottom:10px;
+}
+
+.input-area{
+    display:flex;
+    gap:5px;
+}
+
+input{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:5px;
+    outline:none;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="chat-box">
-    <h2>🤖 Naveen  Assistant</h2>
-    <div id="messages"></div>
 
-    <input type="text" id="userInput" placeholder="Message likho...">
-    <button onclick="sendMessage()">Send</button>
+<h2>🤖 Naveen AI Assistant</h2>
+
+<div id="messages"></div>
+
+<div class="input-area">
+<input type="text" id="userInput" placeholder="Message likho...">
+<button onclick="sendMessage()">Send</button>
+</div>
+
 </div>
 
 <script>
-async function sendMessage() {
-    const input = document.getElementById("userInput");
-    const message = input.value.trim();
-    if (!message) return;
 
-    const messagesDiv = document.getElementById("messages");
+async function sendMessage(){
 
-    // Show user message
-    messagesDiv.innerHTML += `<div class="user">You: ${message}</div>`;
+const input=document.getElementById("userInput");
+const message=input.value.trim();
 
-    input.value = "";
+if(!message) return;
 
-    try {
-        const res = await fetch("/ask", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ message: message })
-        });
+const messagesDiv=document.getElementById("messages");
 
-        const data = await res.json();
+messagesDiv.innerHTML+=`<div class="user">You: ${message}</div>`;
 
-        messagesDiv.innerHTML += `<div class="ai">AI: ${data.reply}</div>`;
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+input.value="";
 
-    } catch (err) {
-        messagesDiv.innerHTML += `<div class="ai">Error connecting to server</div>`;
-    }
+messagesDiv.scrollTop=messagesDiv.scrollHeight;
+
+try{
+
+const res=await fetch("/ask",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({message:message})
+});
+
+const data=await res.json();
+
+messagesDiv.innerHTML+=`<div class="ai">AI: ${data.reply}</div>`;
+
+messagesDiv.scrollTop=messagesDiv.scrollHeight;
+
 }
+
+catch(err){
+
+messagesDiv.innerHTML+=`<div class="ai">Server error</div>`;
+
+}
+
+}
+
+document.getElementById("userInput").addEventListener("keypress",function(e){
+if(e.key==="Enter"){
+sendMessage();
+}
+});
+
 </script>
 
 </body>
